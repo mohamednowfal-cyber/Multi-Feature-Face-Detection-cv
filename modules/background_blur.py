@@ -6,11 +6,12 @@ def blur_background(image):
         cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
     )
 
-    # Convert to grayscale
+    # Convert to grayscale and equalize histogram
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gray = cv2.equalizeHist(gray)
 
-    # Detect faces
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.2, minNeighbors=5)
+    # Detect faces with higher minNeighbors for stability
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=7, minSize=(50, 50))
 
     # Create blurred version of entire image
     # Kernel size (51, 51) for background blur

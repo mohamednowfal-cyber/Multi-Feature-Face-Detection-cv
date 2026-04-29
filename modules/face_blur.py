@@ -4,11 +4,12 @@ def blur_faces(image):
     # Load the pre-trained Haar Cascade classifier
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-    # Convert to grayscale
+    # Convert to grayscale and equalize histogram
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gray = cv2.equalizeHist(gray)
     
-    # Detect faces
-    faces = face_cascade.detectMultiScale(gray, 1.1, 5)
+    # Detect faces with higher minNeighbors to reduce false positives
+    faces = face_cascade.detectMultiScale(gray, 1.1, 7, minSize=(30, 30))
 
     # Apply blur to each detected face
     for (x, y, w, h) in faces:

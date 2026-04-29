@@ -5,9 +5,12 @@ def count_and_label_faces(image):
         cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
     )
 
+    # Convert to grayscale and equalize histogram
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gray = cv2.equalizeHist(gray)
 
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.2, minNeighbors=5)
+    # Detect faces with tuned parameters
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=7, minSize=(30, 30))
 
     count = 0
 

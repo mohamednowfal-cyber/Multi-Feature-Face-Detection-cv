@@ -10,18 +10,24 @@ def classify_eyes(image):
         cv2.data.haarcascades + 'haarcascade_eye.xml'
     )
 
-    # Convert to grayscale
+    # Convert to grayscale and equalize histogram
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gray = cv2.equalizeHist(gray)
 
-    # Detect faces
-    faces = face_cascade.detectMultiScale(gray, 1.2, 5)
+    # Detect faces with robust parameters
+    faces = face_cascade.detectMultiScale(gray, 1.1, 7, minSize=(50, 50))
 
     for (x, y, w, h) in faces:
-        roi_gray = gray[y:y+h, x:x+w]
-        roi_color = image[y:y+h, x:x+w]
+        # Add padding to ROI for better eye context
+        pad_x, pad_y = int(w * 0.05), int(h * 0.05)
+        y1, y2 = max(0, y - pad_y), min(image.shape[0], y + h + pad_y)
+        x1, x2 = max(0, x - pad_x), min(image.shape[1], x + w + pad_x)
+        
+        roi_gray = gray[y1:y2, x1:x2]
+        roi_color = image[y1:y2, x1:x2]
 
-        # Detect eyes inside the face region
-        eyes = eye_cascade.detectMultiScale(roi_gray, 1.1, 4)
+        # Detect eyes inside the face region with high minNeighbors for precision
+        eyes = eye_cascade.detectMultiScale(roi_gray, 1.1, 15, minSize=(10, 10))
 
         # Classification logic based on number of eyes detected
         if len(eyes) >= 2:

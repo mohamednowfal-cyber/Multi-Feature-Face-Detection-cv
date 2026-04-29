@@ -5,13 +5,17 @@ def detect_faces(image):
     # cv2.data.haarcascades provides the path to the data folder
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-    # Convert the image to grayscale for detection
+    # Convert to grayscale and equalize histogram for better accuracy in low light
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gray = cv2.equalizeHist(gray)
     
-    # Detect faces in the image
-    # scaleFactor: Parameter specifying how much the image size is reduced at each image scale
-    # minNeighbors: Parameter specifying how many neighbors each candidate rectangle should have to retain it
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    # Detect faces with tuned parameters for live accuracy
+    faces = face_cascade.detectMultiScale(
+        gray, 
+        scaleFactor=1.1, 
+        minNeighbors=6, 
+        minSize=(30, 30)
+    )
 
     # Draw rectangles around the detected faces
     for (x, y, w, h) in faces:
