@@ -43,7 +43,12 @@ st.subheader("Advanced Computer Vision Image Processing")
 
 # Sidebar
 st.sidebar.title("🛠️ Controls")
-uploaded_file = st.sidebar.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+source = st.sidebar.radio("Input Source:", ["📁 Upload", "📷 Camera"])
+
+if source == "📁 Upload":
+    uploaded_file = st.sidebar.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+else:
+    uploaded_file = st.sidebar.camera_input("Take a photo")
 
 if uploaded_file is not None:
     # Convert file to opencv image

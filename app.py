@@ -23,6 +23,8 @@ class FaceApp:
         self.original_img = None
         self.processed_img = None
         self.display_img = None
+        self.camera_active = False
+        self.cap = None
 
         self.setup_ui()
 
@@ -81,6 +83,10 @@ class FaceApp:
         self.btn_upload = tk.Button(self.scrollable_frame, text="📁 Upload Image", command=self.upload_image, **btn_style)
         self.btn_upload.config(bg="#cba6f7", fg="#11111b")
         self.btn_upload.pack(pady=5)
+
+        self.btn_camera = tk.Button(self.scrollable_frame, text="📷 Live Camera", command=self.toggle_camera, **btn_style)
+        self.btn_camera.config(bg="#a6e3a1", fg="#11111b")
+        self.btn_camera.pack(pady=5)
 
         # SECTION: Face Tools
         create_section_label("FACE TOOLS")
@@ -155,6 +161,7 @@ class FaceApp:
         self.btn_bg_blur.config(state="normal", bg="#cba6f7", fg="#11111b")
         self.btn_eye.config(state="normal", bg="#f5c2e7", fg="#11111b")
         self.btn_count.config(state="normal", bg="#74c7ec", fg="#11111b")
+        self.btn_camera.config(state="normal", bg="#a6e3a1", fg="#11111b")
         self.btn_gray.config(state="normal", bg="#94e2d5", fg="#11111b")
         self.btn_sepia.config(state="normal", bg="#eba0ac", fg="#11111b")
         self.btn_reset.config(state="normal", bg="#fab387", fg="#11111b")
@@ -233,6 +240,47 @@ class FaceApp:
             self.processed_img = apply_sepia(self.original_img.copy())
             self.show_image(self.processed_img)
             self.status_var.set("Sepia filter applied.")
+
+    def toggle_camera(self):
+        if not self.camera_active:
+            self.start_camera()
+        else:
+            self.stop_camera()
+
+    def start_camera(self):
+        self.cap = cv2.VideoCapture(0)
+        if not self.cap.isOpened():
+            messagebox.showerror("Error", "Could not open camera.")
+            return
+        
+        self.camera_active = True
+        self.btn_camera.config(text="🛑 Stop Camera", bg="#f38ba8")
+        self.btn_upload.config(state="disabled")
+        self.status_var.set("Camera Active")
+        self.update_camera_frame()
+
+    def stop_camera(self):
+        self.camera_active = False
+        if self.cap:
+            self.cap.release()
+            self.cap = None
+        self.btn_camera.config(text="📷 Live Camera", bg="#a6e3a1")
+        self.btn_upload.config(state="normal")
+        self.status_var.set("Camera stopped.")
+
+    def update_camera_frame(self):
+        if self.camera_active:
+            ret, frame = self.cap.read()
+            if ret:
+                # Mirror the frame for more natural feel
+                frame = cv2.flip(frame, 1)
+                self.original_img = frame
+                self.processed_img = frame.copy()
+                self.show_image(self.processed_img)
+                self.enable_buttons()
+                self.root.after(10, self.update_camera_frame)
+            else:
+                self.stop_camera()
 
     def reset_image(self):
         if self.original_img is not None:

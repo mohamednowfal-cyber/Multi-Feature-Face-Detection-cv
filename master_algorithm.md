@@ -8,7 +8,7 @@ Use this structured 8-step algorithm for your project report and "Algorithm" sli
 Initialize the Tkinter-based Graphical User Interface (GUI). Set up the modern dark-themed layout, including a **scrollable sidebar** for controls and a central preview panel for image visualization.
 
 ### Step 2: Image Acquisition
-Use the `filedialog` module to browse and select an input image (JPG, PNG, or BMP). Read the image into memory as a **NumPy array** using the OpenCV `imread()` function.
+Use the `filedialog` module to browse and select an input image, or initiate a **Live Camera Stream** via `cv2.VideoCapture(0)`. Real-time frames are captured and treated as individual processing units.
 
 ### Step 3: Color Space Pre-processing
 Convert the input image from the default **BGR** (Blue, Green, Red) color space to **Grayscale** using `cvtColor`. This reduces computational complexity for detection tasks while maintaining original color data for filtering.
