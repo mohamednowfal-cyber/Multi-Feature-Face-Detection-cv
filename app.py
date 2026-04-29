@@ -236,7 +236,10 @@ class FaceApp:
                 messagebox.showinfo("Success", f"Image saved to {path}")
                 self.status_var.set(f"Saved to {os.path.basename(path)}")
 
-if __name__ == "__main__":
+def main():
     root = tk.Tk()
     app = FaceApp(root)
     root.mainloop()
+
+if __name__ == "__main__":
+    main()
