@@ -1,0 +1,13 @@
+# Exclude large media and output folders from deployment bundle
+images/
+output/
+__pycache__/
+*.pyc
+venv/
+.env/
+.git/
+.gitignore
+.vercelignore
+presentation_guide.md
+master_algorithm.md
+verify_modules.py

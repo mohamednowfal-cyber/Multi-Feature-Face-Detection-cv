@@ -11,6 +11,7 @@ Thumbs.db
 venv/
 .env/
 
-# Output files (Included for demonstration)
-# output/*.jpg
-# output/*.png
+# Output files (Excluded to keep deployment bundle small)
+output/*.jpg
+output/*.png
+!output/.gitkeep
