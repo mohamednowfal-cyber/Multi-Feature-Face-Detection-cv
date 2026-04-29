@@ -5,10 +5,10 @@ description = "Multi-Feature Face Processing System using Computer Vision"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-    "opencv-python",
+    "opencv-python-headless",
     "numpy",
     "pillow",
-    "streamlit",
+    "flask",
 ]
 
 [project.scripts]
