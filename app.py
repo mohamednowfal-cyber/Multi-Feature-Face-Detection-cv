@@ -10,6 +10,7 @@ from modules.cartoonify import cartoonify
 from modules.background_blur import blur_background
 from modules.face_count import count_and_label_faces
 from modules.filters import apply_grayscale, apply_sepia
+from modules.eye_classification import classify_eyes
 
 class FaceApp:
     def __init__(self, root):
@@ -95,6 +96,9 @@ class FaceApp:
         self.btn_bg_blur = tk.Button(self.scrollable_frame, text="✨ Background Blur", command=self.apply_background_blur, state="disabled", **btn_style)
         self.btn_bg_blur.pack(pady=5)
 
+        self.btn_eye = tk.Button(self.scrollable_frame, text="👁️ Eye Classification", command=self.apply_eye_classification, state="disabled", **btn_style)
+        self.btn_eye.pack(pady=5)
+
         # SECTION: Artistic Filters
         create_section_label("ARTISTIC FILTERS")
         self.btn_cartoon = tk.Button(self.scrollable_frame, text="🎨 Cartoonify", command=self.apply_cartoon, state="disabled", **btn_style)
@@ -149,6 +153,7 @@ class FaceApp:
         self.btn_blur.config(state="normal", bg="#f9e2af", fg="#11111b")
         self.btn_cartoon.config(state="normal", bg="#a6e3a1", fg="#11111b")
         self.btn_bg_blur.config(state="normal", bg="#cba6f7", fg="#11111b")
+        self.btn_eye.config(state="normal", bg="#f5c2e7", fg="#11111b")
         self.btn_count.config(state="normal", bg="#74c7ec", fg="#11111b")
         self.btn_gray.config(state="normal", bg="#94e2d5", fg="#11111b")
         self.btn_sepia.config(state="normal", bg="#eba0ac", fg="#11111b")
@@ -200,6 +205,13 @@ class FaceApp:
             self.processed_img = blur_background(self.original_img.copy())
             self.show_image(self.processed_img)
             self.status_var.set("Background blur applied.")
+
+    def apply_eye_classification(self):
+        if self.original_img is not None:
+            self.status_var.set("Classifying eyes...")
+            self.processed_img = classify_eyes(self.original_img.copy())
+            self.show_image(self.processed_img)
+            self.status_var.set("Eyes classified.")
 
     def apply_face_count(self):
         if self.original_img is not None:

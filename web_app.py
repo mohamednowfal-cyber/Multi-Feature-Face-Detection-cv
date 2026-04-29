@@ -11,6 +11,7 @@ from modules.cartoonify import cartoonify
 from modules.background_blur import blur_background
 from modules.face_count import count_and_label_faces
 from modules.filters import apply_grayscale, apply_sepia
+from modules.eye_classification import classify_eyes
 
 st.set_page_config(page_title="Visionary Face Processor", page_icon="👤", layout="wide")
 
@@ -55,7 +56,7 @@ if uploaded_file is not None:
     # Options in sidebar
     st.sidebar.markdown("### 👥 Face Tools")
     feature = st.sidebar.selectbox("Choose a feature:", 
-        ["Original", "Face Detection", "Face Blur", "Face Count", "Background Focus", "Cartoonify", "Grayscale", "Sepia Filter"])
+        ["Original", "Face Detection", "Face Blur", "Face Count", "Eye Classification", "Background Focus", "Cartoonify", "Grayscale", "Sepia Filter"])
 
     processed_image = original_image.copy()
 
@@ -65,6 +66,8 @@ if uploaded_file is not None:
         processed_image = blur_faces(processed_image)
     elif feature == "Face Count":
         processed_image = count_and_label_faces(processed_image)
+    elif feature == "Eye Classification":
+        processed_image = classify_eyes(processed_image)
     elif feature == "Background Focus":
         processed_image = blur_background(processed_image)
     elif feature == "Cartoonify":

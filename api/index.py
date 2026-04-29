@@ -14,6 +14,7 @@ from modules.cartoonify import cartoonify
 from modules.background_blur import blur_background
 from modules.face_count import count_and_label_faces
 from modules.filters import apply_grayscale, apply_sepia
+from modules.eye_classification import classify_eyes
 
 app = Flask(__name__)
 
@@ -38,6 +39,7 @@ HTML_TEMPLATE = """
                 <option value="detect">Face Detection</option>
                 <option value="blur">Face Blur</option>
                 <option value="count">Face Count</option>
+                <option value="eye">Eye Classification</option>
                 <option value="focus">Background Focus</option>
                 <option value="cartoon">Cartoonify</option>
                 <option value="gray">Grayscale</option>
@@ -75,6 +77,8 @@ def process():
         output = blur_faces(image)
     elif feature == 'count':
         output = count_and_label_faces(image)
+    elif feature == 'eye':
+        output = classify_eyes(image)
     elif feature == 'focus':
         output = blur_background(image)
     elif feature == 'cartoon':
