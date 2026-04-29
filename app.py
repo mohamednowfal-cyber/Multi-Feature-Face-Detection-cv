@@ -20,11 +20,10 @@ class FaceApp:
         self.root.configure(bg="#1e1e2e")  # Dark theme background
 
         # State variables
-        self.original_img = None
-        self.processed_img = None
         self.display_img = None
         self.camera_active = False
         self.cap = None
+        self.active_filter = None # Track which filter to apply to live feed
 
         self.setup_ui()
 
@@ -187,59 +186,75 @@ class FaceApp:
 
     def apply_detection(self):
         if self.original_img is not None:
-            self.status_var.set("Detecting faces...")
-            self.processed_img = detect_faces(self.original_img.copy())
-            self.show_image(self.processed_img)
-            self.status_var.set("Faces detected.")
+            self.active_filter = "detect"
+            if not self.camera_active:
+                self.status_var.set("Detecting faces...")
+                self.processed_img = detect_faces(self.original_img.copy())
+                self.show_image(self.processed_img)
+            self.status_var.set("Face Detection Active")
 
     def apply_blur(self):
         if self.original_img is not None:
-            self.status_var.set("Blurring faces...")
-            self.processed_img = blur_faces(self.original_img.copy())
-            self.show_image(self.processed_img)
-            self.status_var.set("Faces blurred.")
+            self.active_filter = "blur"
+            if not self.camera_active:
+                self.status_var.set("Blurring faces...")
+                self.processed_img = blur_faces(self.original_img.copy())
+                self.show_image(self.processed_img)
+            self.status_var.set("Face Blur Active")
 
     def apply_cartoon(self):
         if self.original_img is not None:
-            self.status_var.set("Applying cartoon effect...")
-            self.processed_img = cartoonify(self.original_img.copy())
-            self.show_image(self.processed_img)
-            self.status_var.set("Cartoon effect applied.")
+            self.active_filter = "cartoon"
+            if not self.camera_active:
+                self.status_var.set("Applying cartoon effect...")
+                self.processed_img = cartoonify(self.original_img.copy())
+                self.show_image(self.processed_img)
+            self.status_var.set("Cartoon Effect Active")
 
     def apply_background_blur(self):
         if self.original_img is not None:
-            self.status_var.set("Applying background blur...")
-            self.processed_img = blur_background(self.original_img.copy())
-            self.show_image(self.processed_img)
-            self.status_var.set("Background blur applied.")
+            self.active_filter = "bg_blur"
+            if not self.camera_active:
+                self.status_var.set("Applying background blur...")
+                self.processed_img = blur_background(self.original_img.copy())
+                self.show_image(self.processed_img)
+            self.status_var.set("Background Blur Active")
 
     def apply_eye_classification(self):
         if self.original_img is not None:
-            self.status_var.set("Classifying eyes...")
-            self.processed_img = classify_eyes(self.original_img.copy())
-            self.show_image(self.processed_img)
-            self.status_var.set("Eyes classified.")
+            self.active_filter = "eye"
+            if not self.camera_active:
+                self.status_var.set("Classifying eyes...")
+                self.processed_img = classify_eyes(self.original_img.copy())
+                self.show_image(self.processed_img)
+            self.status_var.set("Eye Classification Active")
 
     def apply_face_count(self):
         if self.original_img is not None:
-            self.status_var.set("Counting faces...")
-            self.processed_img = count_and_label_faces(self.original_img.copy())
-            self.show_image(self.processed_img)
-            self.status_var.set("Faces counted and labeled.")
+            self.active_filter = "count"
+            if not self.camera_active:
+                self.status_var.set("Counting faces...")
+                self.processed_img = count_and_label_faces(self.original_img.copy())
+                self.show_image(self.processed_img)
+            self.status_var.set("Face Counting Active")
 
     def apply_grayscale_filter(self):
         if self.original_img is not None:
-            self.status_var.set("Applying grayscale filter...")
-            self.processed_img = apply_grayscale(self.original_img.copy())
-            self.show_image(self.processed_img)
-            self.status_var.set("Grayscale filter applied.")
+            self.active_filter = "gray"
+            if not self.camera_active:
+                self.status_var.set("Applying grayscale filter...")
+                self.processed_img = apply_grayscale(self.original_img.copy())
+                self.show_image(self.processed_img)
+            self.status_var.set("Grayscale Filter Active")
 
     def apply_sepia_filter(self):
         if self.original_img is not None:
-            self.status_var.set("Applying sepia filter...")
-            self.processed_img = apply_sepia(self.original_img.copy())
-            self.show_image(self.processed_img)
-            self.status_var.set("Sepia filter applied.")
+            self.active_filter = "sepia"
+            if not self.camera_active:
+                self.status_var.set("Applying sepia filter...")
+                self.processed_img = apply_sepia(self.original_img.copy())
+                self.show_image(self.processed_img)
+            self.status_var.set("Sepia Filter Active")
 
     def toggle_camera(self):
         if not self.camera_active:
@@ -261,6 +276,7 @@ class FaceApp:
 
     def stop_camera(self):
         self.camera_active = False
+        self.active_filter = None
         if self.cap:
             self.cap.release()
             self.cap = None
@@ -272,10 +288,29 @@ class FaceApp:
         if self.camera_active:
             ret, frame = self.cap.read()
             if ret:
-                # Mirror the frame for more natural feel
                 frame = cv2.flip(frame, 1)
-                self.original_img = frame
-                self.processed_img = frame.copy()
+                self.original_img = frame.copy()
+                
+                # Apply active filter if any
+                if self.active_filter == "detect":
+                    self.processed_img = detect_faces(frame)
+                elif self.active_filter == "blur":
+                    self.processed_img = blur_faces(frame)
+                elif self.active_filter == "cartoon":
+                    self.processed_img = cartoonify(frame)
+                elif self.active_filter == "bg_blur":
+                    self.processed_img = blur_background(frame)
+                elif self.active_filter == "eye":
+                    self.processed_img = classify_eyes(frame)
+                elif self.active_filter == "count":
+                    self.processed_img = count_and_label_faces(frame)
+                elif self.active_filter == "gray":
+                    self.processed_img = apply_grayscale(frame)
+                elif self.active_filter == "sepia":
+                    self.processed_img = apply_sepia(frame)
+                else:
+                    self.processed_img = frame
+                
                 self.show_image(self.processed_img)
                 self.enable_buttons()
                 self.root.after(10, self.update_camera_frame)
@@ -284,6 +319,7 @@ class FaceApp:
 
     def reset_image(self):
         if self.original_img is not None:
+            self.active_filter = None
             self.processed_img = self.original_img.copy()
             self.show_image(self.processed_img)
             self.status_var.set("Image reset.")
